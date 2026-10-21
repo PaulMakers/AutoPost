@@ -1,0 +1,6 @@
+{
+  "name": "Discord Autopost",
+  "description": "Aplikasi otomatisasi pengiriman pesan Discord dengan multi-channel & pesan unik per channel, bot token atau webhook, kontrol delay, log real-time, dan embed builder.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
