@@ -65,6 +65,7 @@ export interface DiscordApiHealth {
   gatewayUrl?: string;
   statusCode?: number;
   error?: string;
+  source?: string;
 }
 
 export interface TargetHealth {

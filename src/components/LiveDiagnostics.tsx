@@ -57,16 +57,19 @@ export const LiveDiagnostics: React.FC<LiveDiagnosticsProps> = ({
     }
   };
 
+  const isPending = discordApiHealth === null;
   const discordConnected = Boolean(discordApiHealth?.connected);
   const discordLatency = discordApiHealth?.latencyMs ?? 0;
 
   let latencyColor = 'text-[#57F287]';
   let latencyBadge = 'bg-[#57F287]/15 text-[#57F287] border-[#57F287]/30';
-  if (discordLatency > 350) {
+  if (isPending) {
+    latencyColor = 'text-amber-400';
+    latencyBadge = 'bg-amber-400/15 text-amber-400 border-amber-400/30';
+  } else if (discordLatency > 350) {
     latencyColor = 'text-[#FEE75C]';
     latencyBadge = 'bg-[#FEE75C]/15 text-[#FEE75C] border-[#FEE75C]/30';
-  }
-  if (!discordConnected) {
+  } else if (!discordConnected) {
     latencyColor = 'text-[#ED4245]';
     latencyBadge = 'bg-[#ED4245]/20 text-[#ED4245] border-[#ED4245]/30';
   }
@@ -81,7 +84,11 @@ export const LiveDiagnostics: React.FC<LiveDiagnosticsProps> = ({
             <Radio className="w-4 h-4 text-[#5865F2]" />
             <span
               className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full ${
-                discordConnected ? 'bg-[#57F287] animate-ping' : 'bg-[#ED4245]'
+                isPending
+                  ? 'bg-amber-400 animate-pulse'
+                  : discordConnected
+                  ? 'bg-[#57F287] animate-ping'
+                  : 'bg-[#ED4245]'
               }`}
             />
           </div>
@@ -110,7 +117,7 @@ export const LiveDiagnostics: React.FC<LiveDiagnosticsProps> = ({
             <Wifi className="w-3.5 h-3.5" />
             <span>Discord:</span>
             <strong>
-              {discordConnected ? `${discordLatency}ms` : 'Terputus'}
+              {isPending ? 'Memeriksa...' : discordConnected ? `${discordLatency}ms` : 'Terputus'}
             </strong>
           </div>
 
@@ -214,7 +221,12 @@ export const LiveDiagnostics: React.FC<LiveDiagnosticsProps> = ({
                   <Wifi className="w-3.5 h-3.5 text-[#5865F2]" />
                   Discord Official API (v10)
                 </span>
-                {discordConnected ? (
+                {isPending ? (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/20 text-amber-400 border border-amber-400/30 flex items-center gap-1">
+                    <RefreshCw className="w-3 h-3 animate-spin" />
+                    MEMERIKSA
+                  </span>
+                ) : discordConnected ? (
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#57F287]/20 text-[#57F287] border border-[#57F287]/30 flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3" />
                     TERSAMBUNG
@@ -231,7 +243,7 @@ export const LiveDiagnostics: React.FC<LiveDiagnosticsProps> = ({
                 <div className="flex justify-between">
                   <span>Ping ke discord.com:</span>
                   <span className={`font-bold ${latencyColor}`}>
-                    {discordConnected ? `${discordLatency} ms` : 'Gagal'}
+                    {isPending ? '...' : discordConnected ? `${discordLatency} ms` : 'Gagal'}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -241,11 +253,16 @@ export const LiveDiagnostics: React.FC<LiveDiagnosticsProps> = ({
                   </span>
                 </div>
                 <div className="flex justify-between truncate">
-                  <span>Gateway URL:</span>
-                  <span className="text-slate-300 text-[10px] truncate max-w-[120px]" title={discordApiHealth?.gatewayUrl}>
-                    {discordApiHealth?.gatewayUrl || 'wss://gateway.discord.gg'}
+                  <span>Gateway / Host:</span>
+                  <span className="text-slate-300 text-[10px] truncate max-w-[130px]" title={discordApiHealth?.source || discordApiHealth?.gatewayUrl}>
+                    {discordApiHealth?.source || discordApiHealth?.gatewayUrl || 'wss://gateway.discord.gg'}
                   </span>
                 </div>
+                {discordApiHealth?.error && (
+                  <div className="pt-1 text-[10px] text-amber-300 truncate" title={discordApiHealth.error}>
+                    Info: {discordApiHealth.error}
+                  </div>
+                )}
               </div>
             </div>
 

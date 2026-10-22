@@ -71,11 +71,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Real-time Measured Status Badge */}
-        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono">
+        <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-white/5 border border-white/10 text-[11px] sm:text-xs font-mono">
           <div className="flex items-center gap-1.5">
             <span
               className={`w-2 h-2 rounded-full ${
-                discordConnected
+                discordConnected === true
                   ? 'bg-[#57F287] shadow-[0_0_8px_#57F287]'
                   : discordConnected === false
                   ? 'bg-[#ED4245]'
@@ -83,20 +83,33 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             />
             <span className="text-slate-400">Discord API:</span>
-            {discordConnected === null ? (
-              <span className="text-slate-300">Menguji...</span>
+            {discordConnected == null || isPinging ? (
+              <span className="text-amber-300 font-semibold animate-pulse">Menghubungkan...</span>
             ) : discordConnected ? (
               <span className="text-[#57F287] font-semibold">
-                {discordLatencyMs !== null && discordLatencyMs !== undefined ? `${discordLatencyMs}ms` : 'Aktif'}
+                {discordLatencyMs != null ? `${discordLatencyMs}ms` : 'Aktif'}
               </span>
             ) : (
-              <span className="text-[#ED4245] font-semibold">Offline</span>
+              <div className="flex items-center gap-1">
+                <span className="text-[#ED4245] font-semibold">Offline</span>
+                {onPingNow && (
+                  <button
+                    type="button"
+                    onClick={onPingNow}
+                    disabled={isPinging}
+                    title="Klik untuk mencoba menghubungkan kembali ke Discord API"
+                    className="ml-0.5 px-1.5 py-0.2 rounded bg-[#ED4245]/20 hover:bg-[#ED4245]/30 text-[#ED4245] text-[10px] font-bold border border-[#ED4245]/40 transition-all cursor-pointer"
+                  >
+                    {isPinging ? '...' : 'Sambung'}
+                  </button>
+                )}
+              </div>
             )}
           </div>
 
-          <span className="text-white/20">|</span>
+          <span className="text-white/20 hidden sm:inline">|</span>
 
-          <div className="flex items-center gap-1.5">
+          <div className="hidden sm:flex items-center gap-1.5">
             <span className="text-slate-400">Server:</span>
             <span className="text-slate-200">
               {serverLatencyMs !== null && serverLatencyMs !== undefined ? `${serverLatencyMs}ms` : 'OK'}
@@ -109,8 +122,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               id="navbar-ping-now-btn"
               onClick={onPingNow}
               disabled={isPinging}
-              title="Ping real-time sekarang"
-              className="ml-1 px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/15 text-[10px] text-slate-300 hover:text-white transition-all cursor-pointer disabled:opacity-50"
+              title="Ping real-time ke Discord sekarang"
+              className="ml-0.5 sm:ml-1 px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/15 text-[10px] text-slate-300 hover:text-white transition-all cursor-pointer disabled:opacity-50"
             >
               {isPinging ? '...' : 'Ping'}
             </button>
